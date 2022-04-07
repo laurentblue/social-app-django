@@ -46,8 +46,7 @@ class AbstractUserSocialAuth(models.Model, DjangoUserMixin):
     @classmethod
     def get_social_auth(cls, provider, uid):
         try:
-            return cls.objects.select_related('user').get(provider=provider,
-                                                          uid=uid)
+            return cls.objects.select_related('user').get(provider=provider, uid=uid, user__site_id=settings.SITE_ID)
         except cls.DoesNotExist:
             return None
 
@@ -68,7 +67,7 @@ class UserSocialAuth(AbstractUserSocialAuth):
     class Meta:
         """Meta data"""
         app_label = "social_django"
-        unique_together = ('provider', 'uid')
+        unique_together = ('provider', 'uid', 'user')
         db_table = 'social_auth_usersocialauth'
 
 

@@ -1,6 +1,7 @@
 """Django ORM models for Social Auth"""
 import base64
 
+from django.conf import settings
 from django.core.exceptions import FieldDoesNotExist
 from django.db import transaction, router
 from django.db.utils import IntegrityError
@@ -11,6 +12,7 @@ from social_core.storage import UserMixin, AssociationMixin, NonceMixin, \
 
 class DjangoUserMixin(UserMixin):
     """Social Auth association model"""
+
     @classmethod
     def changed(cls, user):
         user.save()
@@ -109,7 +111,7 @@ class DjangoUserMixin(UserMixin):
         if not isinstance(uid, str):
             uid = str(uid)
         try:
-            return cls.objects.get(provider=provider, uid=uid)
+            return cls.objects.get(provider=provider, uid=uid, user__site_id=settings.SITE_ID)
         except cls.DoesNotExist:
             return None
 
